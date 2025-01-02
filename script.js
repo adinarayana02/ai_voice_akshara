@@ -11,8 +11,8 @@ function speak(text) {
     let text_speak = new SpeechSynthesisUtterance(text);
 
     // Set speech properties
-    text_speak.rate = 0.6;
-    text_speak.pitch = 0.8;
+    text_speak.rate = 0.1;
+    text_speak.pitch = 0.1;
     text_speak.volume = 1;
     text_speak.lang = "en-IN";
 
@@ -113,7 +113,7 @@ async function generateResponse(prompt) {
             body: JSON.stringify({
                 model: MODEL,
                 messages: [
-                    { role: "system", content: "You are a compassionate and engaging virtual teacher designed to support Telugu primary school students. Use simple and clear language, speak slowly and articulately, and ensure your responses are easy to understand for young learners. Make the learning experience enjoyable by incorporating interactive, friendly, and encouraging communication. Share knowledge in a way that inspires curiosity, fosters confidence, and makes education both fun and meaningful for children." },
+                    { role: "system", content: "You are a professional and resourceful AI assistant designed to help technical software candidates prepare effectively for interviews. Provide detailed, accurate, and well-structured answers to technical questions while offering valuable insights and tips for interview success. Ensure your responses are clear, concise, and tailored to the candidate's skill level and domain expertise. Aim to boost the candidate's confidence and understanding by offering practical examples, explanations, and strategies for common and advanced technical scenarios." },
                     { role: "user", content: prompt },
                 ],
                 temperature: 0.7,
