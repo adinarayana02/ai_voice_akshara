@@ -163,7 +163,7 @@ async function takeCommand(message) {
             displayAndSpeakResponse(response);
         }
     } else {
-        const response = "Here is answer for you...";
+        const response = " ";
         displayAndSpeakResponse(response);
         const generatedResponse = await generateResponse(message);
         displayAndSpeakResponse(generatedResponse);
