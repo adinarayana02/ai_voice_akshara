@@ -140,21 +140,21 @@ async function takeCommand(message) {
     btn.style.display = "flex";
 
     if (message.includes("hello") || message.includes("hey")) {
-        const response = "Hello sir, what can I help you with?";
+        const response = "Hello Iam Akshra, what can I help you with?";
         displayAndSpeakResponse(response);
     } else if (message.includes("who are you")) {
         const response = "I am your virtual assistant, created by Adinarayana.";
         displayAndSpeakResponse(response);
     } else if (message.includes("open youtube")) {
-        const response = "Opening YouTube...";
+        const response = "Opening YouTube";
         displayAndSpeakResponse(response);
         window.open("https://youtube.com/", "_blank");
     } else if (message.includes("open google")) {
-        const response = "Opening Google...";
+        const response = "Opening Google";
         displayAndSpeakResponse(response);
         window.open("https://google.com/", "_blank");
     } else if (message.includes("open linkedin")) {
-    const response = "Opening LinkedIn...";
+    const response = "Opening LinkedIn";
     displayAndSpeakResponse(response);
     window.open("https://www.linkedin.com/", "_blank");
     } else if (message.includes("search") || message.includes("look up")) {
