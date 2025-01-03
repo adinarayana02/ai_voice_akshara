@@ -153,6 +153,10 @@ async function takeCommand(message) {
         const response = "Opening Google...";
         displayAndSpeakResponse(response);
         window.open("https://google.com/", "_blank");
+    }else if (message.includes("open linkedin")) {
+        const response = "Opening linkedin...";
+        displayAndSpeakResponse(response);
+        window.open("https://www.linkedin.com/feed/", "_blank");
     } else if (message.includes("search") || message.includes("look up")) {
         const query = message.replace(/search|look up|for/gi, "").trim(); // Extract search keywords
         if (query) {
