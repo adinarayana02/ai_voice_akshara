@@ -10,75 +10,39 @@ function speak(text) {
     const synth = window.speechSynthesis;
     let text_speak = new SpeechSynthesisUtterance(text);
 
-    // Set speech properties
-    text_speak.rate = 1;
+    text_speak.rate = 1; // Adjust speed for natural tone
     text_speak.pitch = 1;
     text_speak.volume = 1;
     text_speak.lang = "en-IN";
 
-    // Ensure voices are loaded
     const voices = synth.getVoices();
-    const femaleVoice = voices.find(voice =>
+    const preferredVoice = voices.find(voice =>
         voice.name.toLowerCase().includes("female") ||
-        voice.name.toLowerCase().includes("susan") ||
         voice.lang === "en-IN"
     );
 
-    if (femaleVoice) {
-        text_speak.voice = femaleVoice;
-    } else {
-        console.warn("No female voice found; using default voice.");
+    if (preferredVoice) {
+        text_speak.voice = preferredVoice;
     }
-
-    // Highlight words as they are spoken
-    const words = text.split(" ");
-    let wordIndex = 0;
-
-    text_speak.onboundary = (event) => {
-        if (event.name === "word") {
-            highlightWord(words, wordIndex);
-            wordIndex++;
-        }
-    };
-
-    text_speak.onend = () => {
-        clearHighlight(); // Clear highlights after speech ends
-    };
 
     synth.speak(text_speak);
 }
 
 function stopSpeaking() {
-    window.speechSynthesis.cancel(); // Stop any ongoing speech synthesis
-}
-
-function highlightWord(words, index) {
-    const highlightedText = words.map((word, i) => {
-        if (i === index) {
-            return <span class="zoom-out" style="background-color: yellow;">${word}</span>;
-        }
-        return word;
-    }).join(" ");
-    responseOutput.innerHTML = highlightedText; // Update displayed text with highlighted word
-}
-
-function clearHighlight() {
-    responseOutput.innerHTML = responseOutput.innerText; // Remove highlight
+    window.speechSynthesis.cancel();
 }
 
 function wishMe() {
-    let day = new Date();
-    let hours = day.getHours();
+    let hours = new Date().getHours();
     if (hours >= 0 && hours < 12) {
-        speak("Good Morning Sir");
+        speak("Good Morning! How can I brighten your day?");
     } else if (hours >= 12 && hours < 16) {
-        speak("Good Afternoon Sir");
+        speak("Good Afternoon! What can I do for you?");
     } else {
-        speak("Good Evening Sir");
+        speak("Good Evening! Ready for some productive time?");
     }
 }
 
-// Speech recognition setup
 let speechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition = new speechRecognition();
 
@@ -90,16 +54,16 @@ recognition.onresult = (event) => {
 };
 
 btn.addEventListener("click", () => {
-    stopSpeaking(); // Stop any ongoing speech synthesis
-    resetApp(); // Reset the application state
+    stopSpeaking();
+    resetApp();
     recognition.start();
     voice.style.display = "block";
     btn.style.display = "none";
 });
 
 function resetApp() {
-    content.innerText = ""; // Clear the displayed transcript
-    responseOutput.innerHTML = ""; // Clear the response output
+    content.innerText = "";
+    responseOutput.innerHTML = "";
 }
 
 async function generateResponse(prompt) {
@@ -107,16 +71,16 @@ async function generateResponse(prompt) {
         const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: {
-                "Authorization": Bearer ${API_KEY},
+                "Authorization": `Bearer ${API_KEY}`,
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
                 model: MODEL,
                 messages: [
-                    { role: "system", content: "You are a professional and resourceful AI assistant designed to help technical software candidates prepare effectively for interviews. Provide detailed, accurate, and well-structured answers to technical questions while offering valuable insights and tips for interview success. Ensure your responses are clear, concise, and tailored to the candidate's skill level and domain expertise. Aim to boost the candidate's confidence and understanding by offering practical examples, explanations, and strategies for common and advanced technical scenarios." },
+                    { role: "system", content: "You are a friendly, emotional, and highly supportive virtual assistant." },
                     { role: "user", content: prompt },
                 ],
-                temperature: 0.7,
+                temperature: 0.8,
                 max_tokens: 300,
             }),
         });
@@ -125,11 +89,11 @@ async function generateResponse(prompt) {
         if (data && data.choices && data.choices.length > 0) {
             return data.choices[0].message.content.trim();
         } else {
-            return "Sorry, I couldn't process that. Please try again.";
+            return "Sorry, I couldn't understand that. Could you please repeat?";
         }
     } catch (error) {
         console.error("Error generating response:", error);
-        return "There was an error connecting to the AI service.";
+        return "I'm having trouble connecting to my brain! Please try again later.";
     }
 }
 
@@ -137,33 +101,40 @@ async function takeCommand(message) {
     voice.style.display = "none";
     btn.style.display = "flex";
 
-    if (message.includes("hello") || message.includes("hey")) {
-        const response = "Hello sir, what can I help you with?";
+    if (message.includes("hello") || message.includes("hi")) {
+        const response = "Hey there! How's it going? 😊";
         displayAndSpeakResponse(response);
-    } else if (message.includes("who are you")) {
-        const response = "I am your virtual assistant, created by Adinarayana.";
+    } else if (message.includes("how are you")) {
+        const response = "I'm just a bundle of code, but I'm feeling great! How about you?";
+        displayAndSpeakResponse(response);
+    } else if (message.includes("tell me a joke")) {
+        const jokes = [
+            "Why don’t skeletons fight each other? They don’t have the guts. 😂",
+            "What do you call fake spaghetti? An impasta! 🍝",
+            "Why did the bicycle fall over? Because it was two-tired! 🚲"
+        ];
+        const response = jokes[Math.floor(Math.random() * jokes.length)];
         displayAndSpeakResponse(response);
     } else if (message.includes("open youtube")) {
-        const response = "Opening YouTube...";
+        const response = "Sure, opening YouTube for you! Enjoy!";
         displayAndSpeakResponse(response);
         window.open("https://youtube.com/", "_blank");
-    } else if (message.includes("open google")) {
-        const response = "Opening Google...";
-        displayAndSpeakResponse(response);
-        window.open("https://google.com/", "_blank");
-    } else if (message.includes("search") || message.includes("look up")) {
-        const query = message.replace(/search|look up|for/gi, "").trim(); // Extract search keywords
+    } else if (message.includes("search for")) {
+        const query = message.replace(/search for/gi, "").trim();
         if (query) {
-            const response = Searching for: ${query};
+            const response = `Searching Google for: ${query}`;
             displayAndSpeakResponse(response);
-            const googleSearchURL = https://www.google.com/search?q=${encodeURIComponent(query)};
-            window.open(googleSearchURL, "_blank");
+            window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, "_blank");
         } else {
-            const response = "Please specify what you would like me to search for.";
+            const response = "What should I search for?";
             displayAndSpeakResponse(response);
         }
+    } else if (message.includes("i feel")) {
+        const emotion = message.replace("i feel", "").trim();
+        const response = `I'm here for you! It's okay to feel ${emotion}. Want to talk more about it?`;
+        displayAndSpeakResponse(response);
     } else {
-        const response = " ";
+        const response = "Let me think... 🤔";
         displayAndSpeakResponse(response);
         const generatedResponse = await generateResponse(message);
         displayAndSpeakResponse(generatedResponse);
@@ -171,16 +142,14 @@ async function takeCommand(message) {
 }
 
 function displayAndSpeakResponse(response) {
-    responseOutput.innerHTML = response; // Update the text area with the response
-    speak(response); // Speak the response
+    responseOutput.innerHTML = response;
+    speak(response);
 }
 
-// Stop speech synthesis when the page is refreshed
 window.addEventListener("beforeunload", () => {
     stopSpeaking();
 });
 
-// Ensure voices are loaded before the first use
 window.speechSynthesis.onvoiceschanged = () => {
-    console.log("Voices loaded:", window.speechSynthesis.getVoices());
+    console.log("Voices updated.");
 };
