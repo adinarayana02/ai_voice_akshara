@@ -6,6 +6,8 @@ let responseOutput = document.querySelector("#response-output");
 const API_KEY = "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";
 const MODEL = "llama3-8b-8192";
 
+const fillerWords = ["um", "ah", "well", "you know", "actually"]; // Array of filler words
+
 function speak(text) {
     const synth = window.speechSynthesis;
     let text_speak = new SpeechSynthesisUtterance(text);
@@ -55,7 +57,7 @@ function stopSpeaking() {
 function highlightWord(words, index) {
     const highlightedText = words.map((word, i) => {
         if (i === index) {
-            return <span class="zoom-out" style="background-color: yellow;">${word}</span>;
+            return `<span class="zoom-out" style="background-color: yellow;">${word}</span>`;
         }
         return word;
     }).join(" ");
@@ -107,7 +109,7 @@ async function generateResponse(prompt) {
         const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: {
-                "Authorization": Bearer ${API_KEY},
+                "Authorization": `Bearer ${API_KEY}`,
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
@@ -154,9 +156,9 @@ async function takeCommand(message) {
     } else if (message.includes("search") || message.includes("look up")) {
         const query = message.replace(/search|look up|for/gi, "").trim(); // Extract search keywords
         if (query) {
-            const response = Searching for: ${query};
+            const response = `Searching for: ${query}`;
             displayAndSpeakResponse(response);
-            const googleSearchURL = https://www.google.com/search?q=${encodeURIComponent(query)};
+            const googleSearchURL = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
             window.open(googleSearchURL, "_blank");
         } else {
             const response = "Please specify what you would like me to search for.";
@@ -171,8 +173,39 @@ async function takeCommand(message) {
 }
 
 function displayAndSpeakResponse(response) {
-    responseOutput.innerHTML = response; // Update the text area with the response
-    speak(response); // Speak the response
+    // Inject filler words randomly
+    const responseWithFillerWords = injectFillerWords(response);
+    
+    // Simulate breathing
+    playBreathingSound();
+
+    // Add natural pauses between sentences
+    const responseWithPauses = addPauses(responseWithFillerWords);
+
+    responseOutput.innerHTML = responseWithPauses; // Update the text area with the response
+    speak(responseWithPauses); // Speak the response
+}
+
+function injectFillerWords(text) {
+    const words = text.split(" ");
+    const modifiedWords = words.map(word => {
+        // Add a filler word randomly
+        if (Math.random() < 0.1) {
+            return `${fillerWords[Math.floor(Math.random() * fillerWords.length)]} ${word}`;
+        }
+        return word;
+    });
+    return modifiedWords.join(" ");
+}
+
+function playBreathingSound() {
+    // Simulated breathing sound (replace with your desired sound URL)
+    const breathingSound = new Audio("breathing-sound-url.mp3");
+    breathingSound.play();
+}
+
+function addPauses(text) {
+    return text.replace(/([.?!])\s*/g, "$1 <pause>");
 }
 
 // Stop speech synthesis when the page is refreshed
